@@ -1,0 +1,15 @@
+version: "2.4"
+services:
+  prometheus:
+    image: prom/prometheus:v2.40.1
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  promhsd:
+    image: promhsd:all
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./temp.json:/root/temp.json

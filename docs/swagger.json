@@ -1,0 +1,201 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "prometheus http static config (PromHSD)",
+        "title": "PromHSD",
+        "contact": {
+            "name": "Rinat Almakhov",
+            "url": "https://github.com/Gasoid/"
+        },
+        "license": {
+            "name": "MIT License",
+            "url": "https://github.com/Gasoid/promHSD/blob/main/LICENSE"
+        },
+        "version": "1.0.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/",
+    "paths": {
+        "/target/": {
+            "post": {
+                "description": "creates target, returns id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "createTargetHandler",
+                "parameters": [
+                    {
+                        "description": "name",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.createJsonPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "id",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/target/{id}": {
+            "get": {
+                "description": "returns target",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "getTargetHandler",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "target id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "returns id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "updateTargetHandler",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "target id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "name",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.updateJsonPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "id",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/targets/": {
+            "get": {
+                "description": "returns targets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "getTargetsHandler",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "main.createJsonPayload": {
+            "type": "object",
+            "required": [
+                "entries",
+                "name"
+            ],
+            "properties": {
+                "entries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.entryJsonPayload"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.entryJsonPayload": {
+            "type": "object",
+            "required": [
+                "labels",
+                "targets"
+            ],
+            "properties": {
+                "labels": {
+                    "type": "string"
+                },
+                "targets": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.updateJsonPayload": {
+            "type": "object",
+            "required": [
+                "entries",
+                "name"
+            ],
+            "properties": {
+                "entries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.entryJsonPayload"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

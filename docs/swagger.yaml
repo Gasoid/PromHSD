@@ -1,0 +1,133 @@
+basePath: /api/
+definitions:
+  main.createJsonPayload:
+    properties:
+      entries:
+        items:
+          $ref: '#/definitions/main.entryJsonPayload'
+        type: array
+      name:
+        type: string
+    required:
+    - entries
+    - name
+    type: object
+  main.entryJsonPayload:
+    properties:
+      labels:
+        type: string
+      targets:
+        type: string
+    required:
+    - labels
+    - targets
+    type: object
+  main.updateJsonPayload:
+    properties:
+      entries:
+        items:
+          $ref: '#/definitions/main.entryJsonPayload'
+        type: array
+      name:
+        type: string
+    required:
+    - entries
+    - name
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: Rinat Almakhov
+    url: https://github.com/Gasoid/
+  description: prometheus http static config (PromHSD)
+  license:
+    name: MIT License
+    url: https://github.com/Gasoid/promHSD/blob/main/LICENSE
+  title: PromHSD
+  version: 1.0.0
+paths:
+  /target/:
+    post:
+      consumes:
+      - application/json
+      description: creates target, returns id
+      parameters:
+      - description: name
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.createJsonPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: id
+          schema:
+            items:
+              type: string
+            type: array
+      summary: createTargetHandler
+  /target/{id}:
+    get:
+      consumes:
+      - application/json
+      description: returns target
+      parameters:
+      - description: target id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: getTargetHandler
+    post:
+      consumes:
+      - application/json
+      description: returns id
+      parameters:
+      - description: target id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: name
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.updateJsonPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: id
+          schema:
+            items:
+              type: string
+            type: array
+      summary: updateTargetHandler
+  /targets/:
+    get:
+      consumes:
+      - application/json
+      description: returns targets
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: getTargetsHandler
+swagger: "2.0"
