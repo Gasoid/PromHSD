@@ -8,7 +8,7 @@ import (
 
 type testStorage struct {
 	returnError error
-	returnItem  *Target
+	//returnItem  *Target
 }
 
 func (s *testStorage) Create(*Target) error {
