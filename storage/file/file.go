@@ -3,7 +3,7 @@ package file
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"promhsd/db"
@@ -26,7 +26,7 @@ func (f *FileDB) readFile() (map[string]db.Target, error) {
 		return nil, &db.StorageError{Text: "Couldn't open a file", Err: err}
 	}
 	defer jsonFile.Close()
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	byteValue, _ := io.ReadAll(jsonFile)
 
 	var targets map[string]db.Target
 	err = json.Unmarshal(byteValue, &targets)
@@ -66,7 +66,7 @@ func (f *FileDB) writeToFile(targets map[string]db.Target) error {
 		log.Println(err)
 		return &db.StorageError{Text: "Couldn't encode to json", Err: err}
 	}
-	err = ioutil.WriteFile(f.filepath, file, 0644)
+	err = os.WriteFile(f.filepath, file, 0644)
 	if err != nil {
 		log.Println(err)
 		return &db.StorageError{Text: "Couldn't write file", Err: err}

@@ -16,19 +16,45 @@ func (e *StorageError) Unwrap() error {
 }
 
 type Error struct {
-	text string
-	err  error
+	Text string
+	Err  error
 }
 
 func (e *Error) Error() string {
-	return e.text
+	return e.Text
 }
 
 func (e *Error) Unwrap() error {
-	return e.err
+	return e.Err
+}
+
+type NotFoundError struct {
+	Text string
+	Err  error
+}
+
+func (e *NotFoundError) Error() string {
+	return e.Text
+}
+
+func (e *NotFoundError) Unwrap() error {
+	return e.Err
+}
+
+type ValidationError struct {
+	Text string
+	Err  error
+}
+
+func (e *ValidationError) Error() string {
+	return e.Text
+}
+
+func (e *ValidationError) Unwrap() error {
+	return e.Err
 }
 
 var (
-	ErrNotFound   *Error = &Error{text: "Target was not found"}
-	ErrValidation *Error = &Error{text: "Provided data is not valid"}
+	ErrNotFound   *NotFoundError   = &NotFoundError{Text: "Target was not found"}
+	ErrValidation *ValidationError = &ValidationError{Text: "Provided data is not valid"}
 )

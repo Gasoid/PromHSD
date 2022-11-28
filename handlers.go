@@ -33,19 +33,11 @@ type updateJsonPayload struct {
 	Entries []entryJsonPayload `json:"entries" binding:"required"`
 }
 
-type validationError struct {
-	Text   string
-	Fields []string
-}
-
-func (e *validationError) Error() string {
-	return strings.Join(e.Fields, ",")
-}
-
 func (p *createJsonPayload) validate() (*db.Target, error) {
-	err := &validationError{Text: "Validation failed"}
+	err := &db.ValidationError{Text: "Validation failed"}
 	if p.Name == "" {
-		err.Fields = append(err.Fields, "name")
+		err.Text = "Field name is empty"
+		return nil, err
 	}
 	t := db.NewTarget()
 	t.Name = p.Name
@@ -57,23 +49,21 @@ func (p *createJsonPayload) validate() (*db.Target, error) {
 		for _, l := range labels {
 			kv := strings.Split(l, "=")
 			if len(kv) != 2 {
-				err.Fields = append(err.Fields, "labels")
-				break
+				err.Text = "Labels are invalid"
+				return nil, err
 			}
 			entry.Labels[kv[0]] = kv[1]
 		}
 		t.Entries = append(t.Entries, *entry)
-	}
-	if len(err.Fields) > 0 {
-		return nil, err
 	}
 	return t, nil
 }
 
 func (p *updateJsonPayload) validate() (*db.Target, error) {
-	err := &validationError{Text: "Validation failed"}
+	err := &db.ValidationError{Text: "Validation failed"}
 	if p.Name == "" {
-		err.Fields = append(err.Fields, "name")
+		err.Text = "Field name is empty"
+		return nil, err
 	}
 	t := db.NewTarget()
 	t.Name = p.Name
@@ -85,15 +75,12 @@ func (p *updateJsonPayload) validate() (*db.Target, error) {
 		for _, l := range labels {
 			kv := strings.Split(l, "=")
 			if len(kv) != 2 {
-				err.Fields = append(err.Fields, "labels")
-				break
+				err.Text = "Labels are invalid"
+				return nil, err
 			}
 			entry.Labels[kv[0]] = kv[1]
 		}
 		t.Entries = append(t.Entries, *entry)
-	}
-	if len(err.Fields) > 0 {
-		return nil, err
 	}
 	return t, nil
 }

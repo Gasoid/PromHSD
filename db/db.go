@@ -75,6 +75,9 @@ func (t *Target) validate() error {
 	if t.Name == "" {
 		return ErrValidation
 	}
+	if t.Entries == nil || len(t.Entries) == 0 {
+		return ErrValidation
+	}
 	for _, e := range t.Entries {
 		if err := e.validate(); err != nil {
 			return err
