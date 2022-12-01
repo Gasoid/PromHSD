@@ -12,10 +12,10 @@ import (
 func TestFileDB_readFile(t *testing.T) {
 	fileOk, err := os.CreateTemp("", "promhsd-*")
 	assert.NoError(t, err)
-	os.WriteFile(fileOk.Name(), []byte("{}"), 644)
+	os.WriteFile(fileOk.Name(), []byte("{}"), 0644)
 	fileWrong, err := os.CreateTemp("", "promhsd-*")
 	assert.NoError(t, err)
-	os.WriteFile(fileWrong.Name(), []byte("----"), 644)
+	os.WriteFile(fileWrong.Name(), []byte("----"), 0644)
 	defer os.Remove(fileOk.Name())
 	defer os.Remove(fileWrong.Name())
 	type fields struct {
@@ -115,7 +115,7 @@ func TestFileDB_writeToFile(t *testing.T) {
 func TestFileDB_Create(t *testing.T) {
 	fileOk, err := os.CreateTemp("", "promhsd-*")
 	assert.NoError(t, err)
-	os.WriteFile(fileOk.Name(), []byte("{}"), 644)
+	os.WriteFile(fileOk.Name(), []byte("{}"), 0644)
 	defer os.Remove(fileOk.Name())
 	type fields struct {
 		filepath string
@@ -168,7 +168,7 @@ func TestFileDB_Create(t *testing.T) {
 func TestFileDB_Update(t *testing.T) {
 	fileOk, err := os.CreateTemp("", "promhsd-*")
 	assert.NoError(t, err)
-	os.WriteFile(fileOk.Name(), []byte(`{"test": {"name": "test"}}`), 644)
+	os.WriteFile(fileOk.Name(), []byte(`{"test": {"name": "test"}}`), 0644)
 	defer os.Remove(fileOk.Name())
 	type fields struct {
 		filepath string
@@ -231,7 +231,7 @@ func TestFileDB_Update(t *testing.T) {
 func TestFileDB_Delete(t *testing.T) {
 	fileOk, err := os.CreateTemp("", "promhsd-*")
 	assert.NoError(t, err)
-	os.WriteFile(fileOk.Name(), []byte(`{"test": {"name": "test"}}`), 644)
+	os.WriteFile(fileOk.Name(), []byte(`{"test": {"name": "test"}}`), 0644)
 	defer os.Remove(fileOk.Name())
 	type fields struct {
 		filepath string
@@ -284,7 +284,7 @@ func TestFileDB_Delete(t *testing.T) {
 func TestFileDB_Get(t *testing.T) {
 	fileOk, err := os.CreateTemp("", "promhsd-*")
 	assert.NoError(t, err)
-	os.WriteFile(fileOk.Name(), []byte(`{"test": {"name": "test"}}`), 644)
+	os.WriteFile(fileOk.Name(), []byte(`{"test": {"name": "test"}}`), 0644)
 	defer os.Remove(fileOk.Name())
 	type fields struct {
 		filepath string
@@ -337,7 +337,7 @@ func TestFileDB_Get(t *testing.T) {
 func TestFileDB_GetAll(t *testing.T) {
 	fileOk, err := os.CreateTemp("", "promhsd-*")
 	assert.NoError(t, err)
-	os.WriteFile(fileOk.Name(), []byte(`{"test": {"name": "test"}}`), 644)
+	os.WriteFile(fileOk.Name(), []byte(`{"test": {"name": "test"}}`), 0644)
 	defer os.Remove(fileOk.Name())
 	list := []db.Target{}
 	type fields struct {
