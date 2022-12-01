@@ -61,12 +61,12 @@ func (f *FileDB) Unlock() error {
 }
 
 func (f *FileDB) writeToFile(targets map[string]db.Target) error {
-	file, err := json.Marshal(targets)
-	if err != nil {
-		log.Println(err)
-		return &db.StorageError{Text: "Couldn't encode to json", Err: err}
-	}
-	err = os.WriteFile(f.filepath, file, 0644)
+	file, _ := json.Marshal(targets)
+	// if err != nil {
+	// 	log.Println(err)
+	// 	return &db.StorageError{Text: "Couldn't encode to json", Err: err}
+	// }
+	err := os.WriteFile(f.filepath, file, 0644)
 	if err != nil {
 		log.Println(err)
 		return &db.StorageError{Text: "Couldn't write file", Err: err}

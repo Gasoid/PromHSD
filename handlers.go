@@ -109,7 +109,7 @@ func getTargetsHandler(c *gin.Context) {
 	targets := []db.Target{}
 	err := dbService.List(&targets)
 	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"err": err.Error()})
+		c.String(http.StatusInternalServerError, "Internal error occured. Please check logs")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"targets": targets})
@@ -140,7 +140,7 @@ func createTargetHandler(c *gin.Context) {
 			c.JSON(http.StatusUnprocessableEntity, gin.H{"err": err.Error()})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{})
+		c.String(http.StatusInternalServerError, "Internal error occured. Please check logs")
 	}
 	c.JSON(http.StatusOK, gin.H{"id": t.ID})
 }
@@ -242,7 +242,15 @@ func prometheusHandler(c *gin.Context) {
 	t.ID = db.ID(c.Param("id"))
 	err := dbService.Get(t)
 	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"err": err.Error()})
+		if errors.As(err, &db.ErrNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{})
+			return
+		}
+		if errors.As(err, &db.ErrValidation) {
+			c.JSON(http.StatusUnprocessableEntity, gin.H{"err": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{})
 		return
 	}
 

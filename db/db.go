@@ -1,6 +1,9 @@
 package db
 
-import "time"
+import (
+	"log"
+	"time"
+)
 
 type ID string
 
@@ -64,11 +67,19 @@ func (s *Service) Get(target *Target) error {
 	if target.ID == nilID {
 		return ErrValidation
 	}
-	return s.storage.Get(target)
+	err := s.storage.Get(target)
+	if err != nil {
+		log.Println("(Get) Storage returned error: ", err.Error())
+	}
+	return err
 }
 
 func (s *Service) List(targets *[]Target) error {
-	return s.storage.GetAll(targets)
+	err := s.storage.GetAll(targets)
+	if err != nil {
+		log.Println("(GetAll) Storage returned error: ", err.Error())
+	}
+	return err
 }
 
 func (t *Target) validate() error {

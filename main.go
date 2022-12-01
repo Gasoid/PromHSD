@@ -7,13 +7,9 @@ import (
 	"promhsd/storage/file"
 )
 
-var (
-	dbService *db.Service
-)
-
 // @title        PromHSD
 // @version      1.0.0
-// @description  prometheus http static config (PromHSD)
+// @description  prometheus http static config discovery service
 
 // @contact.name  Rinat Almakhov
 // @contact.url   https://github.com/Gasoid/
@@ -23,6 +19,11 @@ var (
 
 // @host      localhost:8080
 // @BasePath  /api/
+
+var (
+	dbService *db.Service
+)
+
 func main() {
 	var err error
 	dbService, err = db.New(file.New("temp.json"))
