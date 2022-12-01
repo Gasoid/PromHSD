@@ -122,7 +122,7 @@ func getTargetsHandler(c *gin.Context) {
 // @Accept       json
 // @Success      200  {array}  string  "id"
 // @Router       /target/ [post]
-// @Param        payload  body createJsonPayload  true  "name"
+// @Param        payload  body  createJsonPayload  true  "name"
 func createTargetHandler(c *gin.Context) {
 	payload := createJsonPayload{}
 	if err := c.ShouldBindJSON(&payload); err != nil {
@@ -151,7 +151,7 @@ func createTargetHandler(c *gin.Context) {
 // @Produce      json
 // @Accept       json
 // @Success      200  {array}  string  readJsonPayload
-// @Param        id  path     string  true  "target id"
+// @Param        id   path     string  true  "target id"
 // @Router       /target/{id} [get]
 func getTargetHandler(c *gin.Context) {
 	t := db.NewTarget()
@@ -179,9 +179,9 @@ func getTargetHandler(c *gin.Context) {
 // @Produce      json
 // @Accept       json
 // @Success      200  {array}  string  "id"
-// @Param        id  path     string  true  "target id"
+// @Param        id   path     string  true  "target id"
 // @Router       /target/{id} [post]
-// @Param        payload  body updateJsonPayload  true  "name"
+// @Param        payload  body  updateJsonPayload  true  "name"
 func updateTargetHandler(c *gin.Context) {
 	payload := updateJsonPayload{}
 	if err := c.ShouldBindJSON(&payload); err != nil {
@@ -216,7 +216,7 @@ func updateTargetHandler(c *gin.Context) {
 // @Produce      json
 // @Accept       json
 // @Success      200  {array}  string  "id"
-// @Param        id  path     string  true  "target id"
+// @Param        id   path     string  true  "target id"
 // @Router       /target/{id} [delete]
 func removeTargetHandler(c *gin.Context) {
 	t := db.NewTarget()
