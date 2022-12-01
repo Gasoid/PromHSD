@@ -12,7 +12,6 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-//go:generate bash -c "tar xvfp <(curl -sL https://github.com/Gasoid/photoDumper/releases/download/0.0.1/assets.zip)"
 //go:embed assets/*
 var staticAssets embed.FS
 

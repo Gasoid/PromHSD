@@ -17,7 +17,7 @@ docker run --name promhsd -d -p 8080:8080 ghcr.io/gasoid/promhsd:latest
 
 ### Run from source
 ```bash
-go generate router.go
+go generate assets.go
 go run ./
 ```
 
