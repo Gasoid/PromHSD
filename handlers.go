@@ -33,19 +33,11 @@ type updateJsonPayload struct {
 	Entries []entryJsonPayload `json:"entries" binding:"required"`
 }
 
-type validationError struct {
-	Text   string
-	Fields []string
-}
-
-func (e *validationError) Error() string {
-	return strings.Join(e.Fields, ",")
-}
-
 func (p *createJsonPayload) validate() (*db.Target, error) {
-	err := &validationError{Text: "Validation failed"}
+	err := &db.ValidationError{Text: "Validation failed"}
 	if p.Name == "" {
-		err.Fields = append(err.Fields, "name")
+		err.Text = "Field name is empty"
+		return nil, err
 	}
 	t := db.NewTarget()
 	t.Name = p.Name
@@ -57,23 +49,21 @@ func (p *createJsonPayload) validate() (*db.Target, error) {
 		for _, l := range labels {
 			kv := strings.Split(l, "=")
 			if len(kv) != 2 {
-				err.Fields = append(err.Fields, "labels")
-				break
+				err.Text = "Labels are invalid"
+				return nil, err
 			}
 			entry.Labels[kv[0]] = kv[1]
 		}
 		t.Entries = append(t.Entries, *entry)
-	}
-	if len(err.Fields) > 0 {
-		return nil, err
 	}
 	return t, nil
 }
 
 func (p *updateJsonPayload) validate() (*db.Target, error) {
-	err := &validationError{Text: "Validation failed"}
+	err := &db.ValidationError{Text: "Validation failed"}
 	if p.Name == "" {
-		err.Fields = append(err.Fields, "name")
+		err.Text = "Field name is empty"
+		return nil, err
 	}
 	t := db.NewTarget()
 	t.Name = p.Name
@@ -85,15 +75,12 @@ func (p *updateJsonPayload) validate() (*db.Target, error) {
 		for _, l := range labels {
 			kv := strings.Split(l, "=")
 			if len(kv) != 2 {
-				err.Fields = append(err.Fields, "labels")
-				break
+				err.Text = "Labels are invalid"
+				return nil, err
 			}
 			entry.Labels[kv[0]] = kv[1]
 		}
 		t.Entries = append(t.Entries, *entry)
-	}
-	if len(err.Fields) > 0 {
-		return nil, err
 	}
 	return t, nil
 }
@@ -122,7 +109,7 @@ func getTargetsHandler(c *gin.Context) {
 	targets := []db.Target{}
 	err := dbService.List(&targets)
 	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"err": err.Error()})
+		c.String(http.StatusInternalServerError, "Internal error occured. Please check logs")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"targets": targets})
@@ -153,7 +140,7 @@ func createTargetHandler(c *gin.Context) {
 			c.JSON(http.StatusUnprocessableEntity, gin.H{"err": err.Error()})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{})
+		c.String(http.StatusInternalServerError, "Internal error occured. Please check logs")
 	}
 	c.JSON(http.StatusOK, gin.H{"id": t.ID})
 }
@@ -255,7 +242,15 @@ func prometheusHandler(c *gin.Context) {
 	t.ID = db.ID(c.Param("id"))
 	err := dbService.Get(t)
 	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"err": err.Error()})
+		if errors.As(err, &db.ErrNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{})
+			return
+		}
+		if errors.As(err, &db.ErrValidation) {
+			c.JSON(http.StatusUnprocessableEntity, gin.H{"err": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{})
 		return
 	}
 
