@@ -4,6 +4,7 @@ ADD go.mod /code/
 #ADD go.sum /code/
 RUN go mod download
 ADD . /code/
+RUN go generate router.go
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o /code/promhsd .
 RUN chmod a+x /code/promhsd
 

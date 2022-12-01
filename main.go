@@ -8,7 +8,7 @@ import (
 )
 
 // @title        PromHSD
-// @version      1.0.0
+// @version      0.0.1
 // @description  prometheus http static config discovery service
 
 // @contact.name  Rinat Almakhov
