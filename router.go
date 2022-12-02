@@ -17,8 +17,8 @@ var staticAssets embed.FS
 
 func setupRouter() *gin.Engine {
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000", "http://localhost:8080"}
-	assets, err := fs.Sub(staticAssets, "build")
+	config.AllowOrigins = []string{"*"}
+	assets, err := fs.Sub(staticAssets, "assets")
 	if err != nil {
 		fmt.Println("build folder is not readable")
 		return nil
