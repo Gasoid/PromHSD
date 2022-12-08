@@ -4,7 +4,8 @@ import (
 	"log"
 	"promhsd/db"
 	_ "promhsd/docs"
-	"promhsd/storage/file"
+	_ "promhsd/storage/dynamo"
+	_ "promhsd/storage/file"
 )
 
 // @title        PromHSD
@@ -26,7 +27,10 @@ var (
 
 func main() {
 	var err error
-	dbService, err = db.New(file.New("temp.json"))
+	storage := getStorage()
+	storageArgs := getStorageArgs(storage)
+	log.Println(storage, storageArgs)
+	dbService, err = db.New(storage, storageArgs)
 	if err != nil {
 		log.Fatal("Can't initialize dbService")
 	}

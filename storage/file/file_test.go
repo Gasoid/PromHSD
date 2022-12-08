@@ -396,7 +396,9 @@ func TestNew(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := New(tt.args.path)
+			service := StorageService{}
+			got, err := service.New(tt.args.path)
+			assert.NoError(t, err)
 			assert.NotNil(t, got)
 		})
 	}
