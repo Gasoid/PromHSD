@@ -91,9 +91,13 @@ func (s *StorageService) ServiceID() string {
 
 func (s *StorageService) New(tableName string) (db.Storage, error) {
 	db := new(DynamoDB)
-	db.svc = dynamodb.New(session.New())
+	sess, err := session.NewSession()
+	if err != nil {
+		return nil, err
+	}
+	db.svc = dynamodb.New(sess)
 	db.tableName = tableName
-	err := db.createTable()
+	err = db.createTable()
 	if err != nil {
 		return nil, err
 	}
