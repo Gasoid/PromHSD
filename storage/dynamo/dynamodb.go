@@ -69,6 +69,10 @@ func (d *DynamoDB) createTable() error {
 				KeyType:       aws.String("HASH"),
 			},
 		},
+		ProvisionedThroughput: &dynamodb.ProvisionedThroughput{
+			ReadCapacityUnits:  aws.Int64(5),
+			WriteCapacityUnits: aws.Int64(5),
+		},
 		TableName: aws.String(d.tableName),
 	}
 	_, err := d.svc.CreateTable(input)
