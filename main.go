@@ -29,7 +29,6 @@ func main() {
 	var err error
 	storage := getStorage()
 	storageArgs := getStorageArgs(storage)
-	log.Println(storage, storageArgs)
 	dbService, err = db.New(storage, storageArgs)
 	if err != nil {
 		log.Fatal("Can't initialize dbService")

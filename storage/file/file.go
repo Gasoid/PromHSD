@@ -89,7 +89,6 @@ func (f *FileDB) Create(target *db.Target) error {
 		return err
 	}
 	target.ID = db.ID(target.Name)
-	target.Time = time.Now()
 	targets[target.ID.String()] = *target
 	err = f.writeToFile(targets)
 	if err != nil {

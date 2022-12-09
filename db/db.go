@@ -53,6 +53,7 @@ func (s *Service) Create(target *Target) error {
 	if err := target.validate(); err != nil {
 		return err
 	}
+	target.Time = time.Now()
 	return s.storage.Create(target)
 }
 
@@ -63,6 +64,7 @@ func (s *Service) Update(target *Target) error {
 	if err := target.validate(); err != nil {
 		return err
 	}
+	target.Time = time.Now()
 	return s.storage.Update(target)
 }
 
