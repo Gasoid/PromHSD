@@ -13,6 +13,10 @@ import (
 	"github.com/gofrs/flock"
 )
 
+const (
+	StorageID = "filedb"
+)
+
 type FileDB struct {
 	filepath string
 	mu       sync.Mutex
@@ -85,7 +89,6 @@ func (f *FileDB) Create(target *db.Target) error {
 		return err
 	}
 	target.ID = db.ID(target.Name)
-	target.Time = time.Now()
 	targets[target.ID.String()] = *target
 	err = f.writeToFile(targets)
 	if err != nil {
@@ -163,8 +166,18 @@ func (f *FileDB) GetAll(list *[]db.Target) error {
 	return nil
 }
 
-func New(path string) *FileDB {
-	return &FileDB{filepath: path}
+type StorageService struct{}
+
+func (s *StorageService) ServiceID() string {
+	return StorageID
+}
+
+func (s *StorageService) New(path string) (db.Storage, error) {
+	return &FileDB{filepath: path}, nil
+}
+
+func init() {
+	db.RegisterStorage(&StorageService{})
 }
 
 // binary Search

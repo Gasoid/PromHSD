@@ -5,6 +5,20 @@ import (
 	"time"
 )
 
+var (
+	nilID    ID
+	storages = map[string]func(string) (Storage, error){}
+)
+
+type StorageService interface {
+	ServiceID() string
+	New(string) (Storage, error)
+}
+
+func RegisterStorage(storage StorageService) {
+	storages[storage.ServiceID()] = storage.New
+}
+
 type ID string
 
 func (id ID) String() string {
@@ -18,10 +32,6 @@ type Storage interface {
 	Get(*Target) error
 	GetAll(*[]Target) error
 }
-
-var (
-	nilID ID
-)
 
 type Target struct {
 	ID      ID        `json:"id"`
@@ -43,6 +53,7 @@ func (s *Service) Create(target *Target) error {
 	if err := target.validate(); err != nil {
 		return err
 	}
+	target.Time = time.Now()
 	return s.storage.Create(target)
 }
 
@@ -53,6 +64,7 @@ func (s *Service) Update(target *Target) error {
 	if err := target.validate(); err != nil {
 		return err
 	}
+	target.Time = time.Now()
 	return s.storage.Update(target)
 }
 
@@ -107,11 +119,15 @@ func (e *Entry) validate() error {
 	return nil
 }
 
-func New(storage Storage) (*Service, error) {
-	if storage == nil {
-		return nil, &StorageError{Text: "storage is not implemented"}
+func New(storageID, opt string) (*Service, error) {
+	if newFunc, ok := storages[storageID]; ok {
+		storage, err := newFunc(opt)
+		if err != nil {
+			return nil, &StorageError{Text: "storage returned error", Err: err}
+		}
+		return &Service{storage}, nil
 	}
-	return &Service{storage}, nil
+	return nil, &StorageError{Text: "storage is not implemented"}
 }
 
 func NewTarget() *Target {

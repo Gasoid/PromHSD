@@ -3,11 +3,16 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"promhsd/db"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+)
+
+var (
+	storage testStorage
 )
 
 type testStorage struct {
@@ -36,12 +41,27 @@ func (s *testStorage) GetAll(*[]db.Target) error {
 	return s.returnError
 }
 
+type testStorageService struct{}
+
+func (s *testStorageService) ServiceID() string {
+	return "testdb"
+}
+
+func (s *testStorageService) New(opt string) (db.Storage, error) {
+	return &storage, nil
+}
+
+func TestMain(m *testing.M) {
+	db.RegisterStorage(&testStorageService{})
+
+	os.Exit(m.Run())
+}
+
 func Test_getTargetsHandler(t *testing.T) {
 	var (
-		err     error
-		storage testStorage
+		err error
 	)
-	dbService, err = db.New(&storage)
+	dbService, err = db.New("testdb", "")
 	assert.NoError(t, err)
 
 	router := setupRouter()
@@ -61,10 +81,9 @@ func Test_getTargetsHandler(t *testing.T) {
 
 func Test_getTargetHandler(t *testing.T) {
 	var (
-		err     error
-		storage testStorage
+		err error
 	)
-	dbService, err = db.New(&storage)
+	dbService, err = db.New("testdb", "")
 	assert.NoError(t, err)
 
 	router := setupRouter()
@@ -109,10 +128,9 @@ func Test_getTargetHandler(t *testing.T) {
 
 func Test_createTargetHandler(t *testing.T) {
 	var (
-		err     error
-		storage testStorage
+		err error
 	)
-	dbService, err = db.New(&storage)
+	dbService, err = db.New("testdb", "")
 	assert.NoError(t, err)
 
 	router := setupRouter()
@@ -174,10 +192,9 @@ func Test_createTargetHandler(t *testing.T) {
 
 func Test_updateTargetHandler(t *testing.T) {
 	var (
-		err     error
-		storage testStorage
+		err error
 	)
-	dbService, err = db.New(&storage)
+	dbService, err = db.New("testdb", "")
 	assert.NoError(t, err)
 
 	router := setupRouter()
@@ -245,10 +262,9 @@ func Test_updateTargetHandler(t *testing.T) {
 
 func Test_removeTargetHandler(t *testing.T) {
 	var (
-		err     error
-		storage testStorage
+		err error
 	)
-	dbService, err = db.New(&storage)
+	dbService, err = db.New("testdb", "")
 	assert.NoError(t, err)
 
 	router := setupRouter()
@@ -302,10 +318,9 @@ func Test_healthHandler(t *testing.T) {
 
 func Test_prometheusHandler(t *testing.T) {
 	var (
-		err     error
-		storage testStorage
+		err error
 	)
-	dbService, err = db.New(&storage)
+	dbService, err = db.New("testdb", "")
 	assert.NoError(t, err)
 
 	router := setupRouter()
