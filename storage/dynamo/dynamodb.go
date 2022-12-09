@@ -115,7 +115,7 @@ func (d *DynamoDB) GetAll(list *[]db.Target) error {
 	if err != nil {
 		return err
 	}
-	targets := make([]db.Target, *result.Count, *result.Count)
+	targets := make([]db.Target, 0, *result.Count)
 	dynamodbattribute.UnmarshalListOfMaps(result.Items, &targets)
 	if err != nil {
 		return err
