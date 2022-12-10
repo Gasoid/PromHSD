@@ -21,10 +21,11 @@ go generate assets.go
 go run ./
 ```
 
-<!-- ### Helm chart
+### Helm chart
 ```bash
-helm install promhsd 
-``` -->
+helm install promhsd --set PROMHSD_STORAGE="dynamodb" --set PROMHSD_DYNAMODB_ARGS="tableName" https://raw.githubusercontent.com/Gasoid/PromHSD/main/helm/promhsd 
+```
+
 
 ## Prometheus configuration
 ```yaml
