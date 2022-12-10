@@ -12,7 +12,7 @@ There are various ways to install PromHSD
 
 ### Docker
 ```bash
-docker run --name promhsd -d -p 8080:8080 ghcr.io/gasoid/promhsd:latest
+docker run --name promhsd -d -p 8080:8080 --env PROMHSD_STORAGE="filedb" --env PROMHSD_FILEDB_ARGS="db.json" --env ghcr.io/gasoid/promhsd:latest
 ```
 
 ### Run from source
