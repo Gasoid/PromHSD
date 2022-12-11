@@ -50,6 +50,10 @@ type Service struct {
 	storage Storage
 }
 
+func (s *Service) IsHealthy() bool {
+	return s.IsHealthy()
+}
+
 func (s *Service) Create(target *Target) error {
 	if err := target.validate(); err != nil {
 		return err

@@ -258,5 +258,9 @@ func prometheusHandler(c *gin.Context) {
 }
 
 func healthHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{})
+	if !dbService.IsHealthy() {
+		c.JSON(http.StatusInternalServerError, gin.H{"healthy": "no"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"healthy": "yes"})
 }
