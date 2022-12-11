@@ -7,6 +7,18 @@ PromHSD provides target list for Prometheus through HTTP API. Since version 2.x 
 
 Official documentation https://prometheus.io/docs/prometheus/latest/http_sd/
 
+
+## Storages
+Now PromHSD supports 2 databases:
+- AWS DynamoDB
+- file (simple json file)
+<!--
+- Azure CosmosDB
+- Google
+-->
+
+![screen](screen.webp)
+
 ## Install
 There are various ways to install PromHSD
 
@@ -32,18 +44,11 @@ helm install promhsd --set PROMHSD_STORAGE="dynamodb" --set PROMHSD_DYNAMODB_ARG
 scrape_configs:
   - job_name: httpsd
     http_sd_configs:
-      - url: "http://promhsd:8080/prom-target/qwe"
+      - url: "http://promhsd:8080/prom-target/db1"
 
 ```
+`/prom-target/%ID%` entrypoint is intended for prometheus, `%ID%` is target id created in promHSD.
 
-### Storages
-Now PromHSD supports 2 databases:
-- AWS DynamoDB
-- file (simple json file)
-<!--
-- Azure CosmosDB
-- Google
--->
 
 ## Configuration
 | Variable Name  | Default value | Description |
