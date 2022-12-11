@@ -32,6 +32,10 @@ func (s *testStorage) GetAll(*[]Target) error {
 	return s.returnError
 }
 
+func (s *testStorage) IsHealthy() bool {
+	return true
+}
+
 type testStorageService struct {
 	storage Storage
 }

@@ -31,6 +31,7 @@ type Storage interface {
 	Delete(*Target) error
 	Get(*Target) error
 	GetAll(*[]Target) error
+	IsHealthy() bool
 }
 
 type Target struct {
@@ -47,6 +48,10 @@ type Entry struct {
 
 type Service struct {
 	storage Storage
+}
+
+func (s *Service) IsHealthy() bool {
+	return s.storage.IsHealthy()
 }
 
 func (s *Service) Create(target *Target) error {

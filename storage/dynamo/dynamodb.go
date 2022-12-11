@@ -21,6 +21,24 @@ type DynamoDB struct {
 	svc       *dynamodb.DynamoDB
 }
 
+func (d *DynamoDB) IsHealthy() bool {
+	input := &dynamodb.DescribeTableInput{
+		TableName: aws.String(d.tableName),
+	}
+
+	result, err := d.svc.DescribeTable(input)
+	if err != nil {
+		log.Println("DescribeTable returns error:", err.Error())
+		return false
+	}
+	if *result.Table.TableStatus != dynamodb.TableStatusActive {
+		log.Println("Table status is", *result.Table.TableStatus)
+		return false
+	}
+	return true
+
+}
+
 func (d *DynamoDB) Create(target *db.Target) error {
 	target.ID = db.ID(target.Name)
 	av, err := dynamodbattribute.MarshalMap(target)

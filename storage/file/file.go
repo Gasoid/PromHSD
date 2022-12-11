@@ -23,6 +23,17 @@ type FileDB struct {
 	filelock *flock.Flock
 }
 
+func (f *FileDB) IsHealthy() bool {
+	stat, err := os.Stat(f.filepath)
+	if err != nil {
+		return false
+	}
+	if stat.IsDir() {
+		return false
+	}
+	return true
+}
+
 func (f *FileDB) readFile() (map[string]db.Target, error) {
 	jsonFile, err := os.Open(f.filepath)
 	if err != nil {
@@ -173,6 +184,14 @@ func (s *StorageService) ServiceID() string {
 }
 
 func (s *StorageService) New(path string) (db.Storage, error) {
+	_, err := os.Stat(path)
+	if err != nil {
+		err := os.WriteFile(path, []byte("[]"), 0644)
+		if err != nil {
+			log.Println(err)
+			return nil, &db.StorageError{Text: "Couldn't write file", Err: err}
+		}
+	}
 	return &FileDB{filepath: path}, nil
 }
 
