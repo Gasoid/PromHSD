@@ -51,7 +51,7 @@ type Service struct {
 }
 
 func (s *Service) IsHealthy() bool {
-	return s.IsHealthy()
+	return s.storage.IsHealthy()
 }
 
 func (s *Service) Create(target *Target) error {
