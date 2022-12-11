@@ -31,6 +31,7 @@ type Storage interface {
 	Delete(*Target) error
 	Get(*Target) error
 	GetAll(*[]Target) error
+	IsHealthy() bool
 }
 
 type Target struct {

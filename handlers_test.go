@@ -41,6 +41,10 @@ func (s *testStorage) GetAll(*[]db.Target) error {
 	return s.returnError
 }
 
+func (s *testStorage) IsHealthy() bool {
+	return true
+}
+
 type testStorageService struct{}
 
 func (s *testStorageService) ServiceID() string {
