@@ -1,5 +1,6 @@
 # PromHSD
 
+[![codecov](https://codecov.io/gh/Gasoid/PromHSD/branch/main/graph/badge.svg?token=HXLQV248WC)](https://codecov.io/gh/Gasoid/PromHSD)
 
 Prometheus http static config discovery service 
 
