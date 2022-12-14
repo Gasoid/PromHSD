@@ -36,7 +36,7 @@ go run ./
 
 ### Helm chart
 ```bash
-helm install promhsd --set PROMHSD_STORAGE="dynamodb" --set PROMHSD_DYNAMODB_ARGS="tableName" https://raw.githubusercontent.com/Gasoid/PromHSD/main/helm/promhsd 
+helm install promhsd --set PROMHSD_STORAGE="dynamodb" --set PROMHSD_DYNAMODB_ARGS="tableName" https://github.com/Gasoid/PromHSD/releases/download/v0.0.1/promhsd-0.1.0.tgz
 ```
 
 
