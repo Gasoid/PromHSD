@@ -1,6 +1,8 @@
-version: "2.4"
+version: "3.4"
 services:
   prometheus:
+    depends_on:
+      - promhsd
     image: prom/prometheus:v2.40.1
     ports:
       - "9090:9090"
@@ -8,8 +10,15 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
 
   promhsd:
-    image: promhsd:all
+    image: ghcr.io/gasoid/promhsd:latest
+    environment:
+      - PROMHSD_FILEDB_ARGS=/tmp/promhsd.json
+      - PROMHSD_STORAGE=filedb
     ports:
       - "8080:8080"
-    volumes:
-      - ./temp.json:/root/temp.json
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

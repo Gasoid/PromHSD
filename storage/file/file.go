@@ -169,7 +169,7 @@ func (f *FileDB) GetAll(list *[]db.Target) error {
 	if err != nil {
 		return err
 	}
-	targetList := make([]db.Target, 0, len(targets)-1)
+	targetList := make([]db.Target, 0, len(targets))
 	for _, v := range targets {
 		targetList = append(targetList, v)
 	}
@@ -186,7 +186,7 @@ func (s *StorageService) ServiceID() string {
 func (s *StorageService) New(path string) (db.Storage, error) {
 	_, err := os.Stat(path)
 	if err != nil {
-		err := os.WriteFile(path, []byte("[]"), 0644)
+		err := os.WriteFile(path, []byte("{}"), 0644)
 		if err != nil {
 			log.Println(err)
 			return nil, &db.StorageError{Text: "Couldn't write file", Err: err}
