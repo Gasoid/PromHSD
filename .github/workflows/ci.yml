@@ -34,9 +34,9 @@ jobs:
     - name: Test
       run: go test -v ./... -coverprofile=coverage.txt -covermode=atomic
 
-    # - uses: codecov/codecov-action@v2
-    #   with:
-    #     name: Upload coverage
-    #     files: ./coverage.txt
-    #     fail_ci_if_error: true
-    #     verbose: true
+    - uses: codecov/codecov-action@v2
+      with:
+        name: Upload coverage
+        files: ./coverage.txt
+        fail_ci_if_error: true
+        verbose: true
