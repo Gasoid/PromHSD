@@ -45,7 +45,7 @@ func (c *MongoDB) Create(target *db.Target) error {
 
 func (c *MongoDB) Delete(target *db.Target) error {
 	id, _ := primitive.ObjectIDFromHex(target.ID.String())
-	filter := bson.D{{"_id", id}}
+	filter := bson.D{primitive.E{Key: "_id", Value: id}}
 	coll := c.client.Database(c.dbName).Collection(collectionName)
 	_, err := coll.DeleteOne(context.TODO(), filter)
 	if err != nil {
@@ -57,7 +57,7 @@ func (c *MongoDB) Delete(target *db.Target) error {
 
 func (c *MongoDB) Get(target *db.Target) error {
 	id, _ := primitive.ObjectIDFromHex(target.ID.String())
-	filter := bson.D{{"_id", id}}
+	filter := bson.D{primitive.E{Key: "_id", Value: id}}
 	coll := c.client.Database(c.dbName).Collection(collectionName)
 	err := coll.FindOne(context.TODO(), filter).Decode(target)
 	if err != nil {
@@ -69,7 +69,7 @@ func (c *MongoDB) Get(target *db.Target) error {
 
 func (c *MongoDB) Update(target *db.Target) error {
 	id, _ := primitive.ObjectIDFromHex(target.ID.String())
-	filter := bson.D{{"_id", id}}
+	filter := bson.D{primitive.E{Key: "_id", Value: id}}
 	coll := c.client.Database(c.dbName).Collection(collectionName)
 	target.ID = db.ID("")
 	_, err := coll.ReplaceOne(context.TODO(), filter, target)
