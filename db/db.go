@@ -35,7 +35,7 @@ type Storage interface {
 }
 
 type Target struct {
-	ID      ID        `json:"id"`
+	ID      ID        `json:"id" bson:"_id,omitempty"`
 	Name    string    `json:"name"`
 	Time    time.Time `json:"time"`
 	Entries []Entry   `json:"entries"`

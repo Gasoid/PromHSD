@@ -6,6 +6,7 @@ import (
 	_ "promhsd/docs"
 	_ "promhsd/storage/dynamo"
 	_ "promhsd/storage/file"
+	_ "promhsd/storage/mongo"
 )
 
 // @title        PromHSD

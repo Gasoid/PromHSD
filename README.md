@@ -21,10 +21,10 @@ In all situations and cases where you need to use either static_sd or file_sd yo
 
 ## Storages
 Now PromHSD supports 2 databases:
+- MongoDB (so that you can use Atlas, Azure CosmosDB, etc)
 - AWS DynamoDB
 - file (simple json file)
 <!--
-- Azure CosmosDB
 - Google
 -->
 
@@ -115,9 +115,10 @@ scrape_configs:
 ## Configuration
 | Variable Name  | Default value | Description |
 | ------------- | ------------- | ------------- |
-| PROMHSD_STORAGE | "" | You should choose storage engine where data will be stored. Possible values: "filedb", "dynamodb"  |
+| PROMHSD_STORAGE | "" | You should choose storage engine where data will be stored. Possible values: "filedb", "dynamodb", "mongodb"  |
 | PROMHSD_FILEDB_ARGS | "" | Filepath, e.g. "temp.json", "/opt/db/file.json". File will be created automatically. |
 | PROMHSD_DYNAMODB_ARGS | "" | Table Name, Table will be created automatically. You need to provide usual AWS credentials (env variables, profile and etc) |
+| PROMHSD_MONGODB_ARGS | "" | it is MONGODB URI, e.g. mongodb+srv://user:pAssw0rd@cluster0.1tivu8s.mongodb.net/DatabaseName?retryWrites=true&w=majority |
 
 ## API Documentation
 Swagger endpoint: /swagger/index.html
