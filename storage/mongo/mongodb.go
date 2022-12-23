@@ -26,11 +26,7 @@ type MongoDB struct {
 
 func (c *MongoDB) IsHealthy() bool {
 	err := c.client.Ping(context.TODO(), nil)
-	if err != nil {
-		return false
-	}
-	return true
-
+	return err == nil
 }
 
 func (c *MongoDB) Create(target *db.Target) error {
