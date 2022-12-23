@@ -20,7 +20,7 @@ In all situations and cases where you need to use either static_sd or file_sd yo
 
 
 ## Storages
-Now PromHSD supports 2 databases:
+Now PromHSD supports following databases:
 - MongoDB (so that you can use Atlas, Azure CosmosDB, etc)
 - AWS DynamoDB
 - file (simple json file)
