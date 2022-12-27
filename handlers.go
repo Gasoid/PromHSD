@@ -140,6 +140,10 @@ func createTargetHandler(c *gin.Context) {
 			c.JSON(http.StatusUnprocessableEntity, gin.H{"err": err.Error()})
 			return
 		}
+		if errors.As(err, &db.ErrConflict) {
+			c.JSON(http.StatusConflict, gin.H{"err": err.Error()})
+			return
+		}
 		c.String(http.StatusInternalServerError, "Internal error occured. Please check logs")
 	}
 	c.JSON(http.StatusOK, gin.H{"id": t.ID})

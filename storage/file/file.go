@@ -100,6 +100,9 @@ func (f *FileDB) Create(target *db.Target) error {
 		return err
 	}
 	target.ID = db.ID(target.Name)
+	if _, ok := targets[target.ID.String()]; ok {
+		return db.ErrConflict
+	}
 	targets[target.ID.String()] = *target
 	err = f.writeToFile(targets)
 	if err != nil {
@@ -199,50 +202,6 @@ func init() {
 	db.RegisterStorage(&StorageService{})
 }
 
-// binary Search
-// func findTarget(name string, targets []db.Target) (int, error) {
-// 	left := 0
-// 	right := len(targets)
-// 	for left <= right {
-// 		midPos := (left + right) / 2
-// 		ret := strings.Compare(name, targets[midPos].Name)
-// 		if ret == 0 {
-// 			return midPos, nil
-// 		}
-// 		if ret < 0 {
-// 			right = midPos
-// 		} else {
-// 			left = midPos + 1
-// 		}
-
-// 	}
-// 	return -1, errors.New("item doesn't exist")
-// }
-
-// func findTargetByNameTime(name string, timestamp time.Time, targets []db.Target) (int, error) {
-// 	i, err := findTarget(name, targets)
-// 	if err != nil {
-// 		return -1, errors.New("item doesn't exist")
-// 	}
-// 	for j := range targets[i:] {
-// 		if targets[j+i].Time == timestamp {
-// 			return j + i, nil
-// 		}
-// 	}
-// 	return -1, errors.New("item doesn't exist")
-// }
-
-// func sortTargets(targets []db.Target) {
-// 	sort.SliceStable(targets, func(i, j int) bool {
-// 		if strings.Compare(targets[i].Name, targets[j].Name) == -1 {
-// 			return true
-// 		}
-// 		if strings.Compare(targets[i].Name, targets[j].Name) == 0 {
-// 			return true
-// 		}
-// 		return false
-// 	})
-// 	for i := range targets {
-// 		targets[i].ID = db.ID(strconv.Itoa(i))
-// 	}
-// }
+var (
+	_ db.Storage = (*FileDB)(nil)
+)

@@ -45,7 +45,13 @@ func (d *DynamoDB) Create(target *db.Target) error {
 	if err != nil {
 		return err
 	}
-
+	err = d.Get(&db.Target{ID: target.ID})
+	if err == nil {
+		return db.ErrConflict
+	}
+	if err != nil && err != db.ErrNotFound {
+		return err
+	}
 	_, err = d.svc.PutItem(&dynamodb.PutItemInput{
 		TableName: aws.String(d.tableName),
 		Item:      av,
@@ -198,3 +204,7 @@ func (s *StorageService) New(tableName string) (db.Storage, error) {
 func init() {
 	db.RegisterStorage(&StorageService{})
 }
+
+var (
+	_ db.Storage = (*DynamoDB)(nil)
+)
