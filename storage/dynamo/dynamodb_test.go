@@ -291,7 +291,7 @@ func TestDynamoDB_createTable(t *testing.T) {
 		{
 			name: "ResourceInUseError",
 			fields: fields{
-				ICreateTable: &testTable{err: awserr.New(dynamodb.ErrCodeResourceInUseException, "notFound", nil)},
+				ICreateTable: &testTable{err: &dynamodb.ResourceInUseException{}},
 			},
 			wantErr: false,
 		},
