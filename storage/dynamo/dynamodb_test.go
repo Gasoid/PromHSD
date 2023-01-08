@@ -4,6 +4,7 @@ import (
 	"promhsd/db"
 	"testing"
 
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/stretchr/testify/assert"
@@ -38,11 +39,12 @@ func (item *testDeleteItem) DeleteItem(*dynamodb.DeleteItemInput) (*dynamodb.Del
 }
 
 type testTable struct {
-	err error
+	err    error
+	result *dynamodb.DescribeTableOutput
 }
 
 func (item *testTable) DescribeTable(*dynamodb.DescribeTableInput) (*dynamodb.DescribeTableOutput, error) {
-	return nil, item.err
+	return item.result, item.err
 }
 
 func (item *testTable) CreateTable(*dynamodb.CreateTableInput) (*dynamodb.CreateTableOutput, error) {
@@ -207,10 +209,17 @@ func TestDynamoDB_Create(t *testing.T) {
 }
 
 func TestDynamoDB_IsHealthy(t *testing.T) {
+	activeResult := &dynamodb.DescribeTableOutput{
+		Table: &dynamodb.TableDescription{TableStatus: aws.String(dynamodb.TableStatusActive)},
+	}
+	creatingResult := &dynamodb.DescribeTableOutput{
+		Table: &dynamodb.TableDescription{TableStatus: aws.String(dynamodb.TableStatusCreating)},
+	}
 	type fields struct {
 		IDescribeTable IDescribeTable
 		tableName      string
 	}
+
 	tests := []struct {
 		name   string
 		fields fields
@@ -220,6 +229,20 @@ func TestDynamoDB_IsHealthy(t *testing.T) {
 			name: "NotFoundError",
 			fields: fields{
 				IDescribeTable: &testTable{err: awserr.New(dynamodb.ErrCodeResourceNotFoundException, "notFound", nil)},
+			},
+			want: false,
+		},
+		{
+			name: "NoError",
+			fields: fields{
+				IDescribeTable: &testTable{err: nil, result: activeResult},
+			},
+			want: true,
+		},
+		{
+			name: "TableNoActiveError",
+			fields: fields{
+				IDescribeTable: &testTable{err: nil, result: creatingResult},
 			},
 			want: false,
 		},
