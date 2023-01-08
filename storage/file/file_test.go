@@ -140,6 +140,16 @@ func TestFileDB_Create(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "conflictError",
+			fields: fields{
+				filepath: fileOk.Name(),
+			},
+			args: args{
+				target: &db.Target{Name: "test"},
+			},
+			wantErr: true,
+		},
+		{
 			name: "filenameWrong",
 			fields: fields{
 				filepath: filepath.Join("dirNotExist", "wrong.json"),
