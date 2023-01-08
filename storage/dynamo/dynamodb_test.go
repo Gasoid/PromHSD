@@ -37,11 +37,23 @@ func (item *testDeleteItem) DeleteItem(*dynamodb.DeleteItemInput) (*dynamodb.Del
 	return nil, item.err
 }
 
-type testDescribeTable struct {
+type testTable struct {
 	err error
 }
 
-func (item *testDescribeTable) DescribeTable(*dynamodb.DescribeTableInput) (*dynamodb.DescribeTableOutput, error) {
+func (item *testTable) DescribeTable(*dynamodb.DescribeTableInput) (*dynamodb.DescribeTableOutput, error) {
+	return nil, item.err
+}
+
+func (item *testTable) CreateTable(*dynamodb.CreateTableInput) (*dynamodb.CreateTableOutput, error) {
+	return nil, item.err
+}
+
+type testScan struct {
+	err error
+}
+
+func (item *testScan) Scan(*dynamodb.ScanInput) (*dynamodb.ScanOutput, error) {
 	return nil, item.err
 }
 
@@ -207,7 +219,7 @@ func TestDynamoDB_IsHealthy(t *testing.T) {
 		{
 			name: "NotFoundError",
 			fields: fields{
-				IDescribeTable: &testDescribeTable{err: awserr.New(dynamodb.ErrCodeResourceNotFoundException, "notFound", nil)},
+				IDescribeTable: &testTable{err: awserr.New(dynamodb.ErrCodeResourceNotFoundException, "notFound", nil)},
 			},
 			want: false,
 		},
@@ -219,6 +231,73 @@ func TestDynamoDB_IsHealthy(t *testing.T) {
 				tableName:      tt.fields.tableName,
 			}
 			assert.Equal(t, tt.want, d.IsHealthy())
+		})
+	}
+}
+
+func TestDynamoDB_GetAll(t *testing.T) {
+	type fields struct {
+		IScan     IScan
+		tableName string
+	}
+	type args struct {
+		list *[]db.Target
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "NotFoundError",
+			fields: fields{
+				IScan: &testScan{err: awserr.New(dynamodb.ErrCodeResourceNotFoundException, "notFound", nil)},
+			},
+			args:    args{list: &[]db.Target{}},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			d := &DynamoDB{
+				IScan:     tt.fields.IScan,
+				tableName: tt.fields.tableName,
+			}
+			if err := d.GetAll(tt.args.list); (err != nil) != tt.wantErr {
+				assert.Error(t, err)
+			}
+		})
+	}
+}
+
+func TestDynamoDB_createTable(t *testing.T) {
+	type fields struct {
+		ICreateTable ICreateTable
+		tableName    string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name: "Error",
+			fields: fields{
+				ICreateTable: &testTable{err: awserr.New(dynamodb.ErrCodeResourceNotFoundException, "notFound", nil)},
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			d := &DynamoDB{
+				ICreateTable: tt.fields.ICreateTable,
+				tableName:    tt.fields.tableName,
+			}
+			if err := d.createTable(); (err != nil) != tt.wantErr {
+				t.Errorf("DynamoDB.createTable() error = %v, wantErr %v", err, tt.wantErr)
+			}
 		})
 	}
 }
