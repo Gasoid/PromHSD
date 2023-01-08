@@ -296,8 +296,38 @@ func TestDynamoDB_createTable(t *testing.T) {
 				tableName:    tt.fields.tableName,
 			}
 			if err := d.createTable(); (err != nil) != tt.wantErr {
-				t.Errorf("DynamoDB.createTable() error = %v, wantErr %v", err, tt.wantErr)
+				assert.Error(t, err)
 			}
+		})
+	}
+}
+
+func TestStorageService_New(t *testing.T) {
+	type args struct {
+		tableName string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    db.Storage
+		wantErr bool
+	}{
+		{
+			name:    "Error",
+			args:    args{"table"},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &StorageService{}
+			got, err := s.New(tt.args.tableName)
+			if (err != nil) != tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
