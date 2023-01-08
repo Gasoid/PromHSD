@@ -52,11 +52,12 @@ func (item *testTable) CreateTable(*dynamodb.CreateTableInput) (*dynamodb.Create
 }
 
 type testScan struct {
-	err error
+	result *dynamodb.ScanOutput
+	err    error
 }
 
 func (item *testScan) Scan(*dynamodb.ScanInput) (*dynamodb.ScanOutput, error) {
-	return nil, item.err
+	return item.result, item.err
 }
 
 func TestDynamoDB_Get(t *testing.T) {
@@ -279,6 +280,14 @@ func TestDynamoDB_GetAll(t *testing.T) {
 			},
 			args:    args{list: &[]db.Target{}},
 			wantErr: true,
+		},
+		{
+			name: "Empty",
+			fields: fields{
+				IScan: &testScan{err: nil, result: &dynamodb.ScanOutput{Count: aws.Int64(0), Items: []map[string]*dynamodb.AttributeValue{}}},
+			},
+			args:    args{list: &[]db.Target{}},
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
