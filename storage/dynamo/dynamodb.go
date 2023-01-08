@@ -16,9 +16,39 @@ const (
 	StorageID = "dynamodb"
 )
 
+type ICreateTable interface {
+	CreateTable(*dynamodb.CreateTableInput) (*dynamodb.CreateTableOutput, error)
+}
+
+type IDescribeTable interface {
+	DescribeTable(*dynamodb.DescribeTableInput) (*dynamodb.DescribeTableOutput, error)
+}
+
+type IGetItem interface {
+	GetItem(*dynamodb.GetItemInput) (*dynamodb.GetItemOutput, error)
+}
+
+type IPutItem interface {
+	PutItem(*dynamodb.PutItemInput) (*dynamodb.PutItemOutput, error)
+}
+
+type IDeleteItem interface {
+	DeleteItem(*dynamodb.DeleteItemInput) (*dynamodb.DeleteItemOutput, error)
+}
+
+type IScan interface {
+	Scan(*dynamodb.ScanInput) (*dynamodb.ScanOutput, error)
+}
+
 type DynamoDB struct {
+	ICreateTable
+	IDescribeTable
+	IGetItem
+	IPutItem
+	IDeleteItem
+	IScan
 	tableName string
-	svc       *dynamodb.DynamoDB
+	// svc       *dynamodb.DynamoDB
 }
 
 func (d *DynamoDB) IsHealthy() bool {
@@ -26,7 +56,7 @@ func (d *DynamoDB) IsHealthy() bool {
 		TableName: aws.String(d.tableName),
 	}
 
-	result, err := d.svc.DescribeTable(input)
+	result, err := d.DescribeTable(input)
 	if err != nil {
 		log.Println("DescribeTable returns error:", err.Error())
 		return false
@@ -45,8 +75,14 @@ func (d *DynamoDB) Create(target *db.Target) error {
 	if err != nil {
 		return err
 	}
-
-	_, err = d.svc.PutItem(&dynamodb.PutItemInput{
+	err = d.Get(&db.Target{ID: target.ID})
+	if err == nil {
+		return db.ErrConflict
+	}
+	if err != nil && err != db.ErrNotFound {
+		return err
+	}
+	_, err = d.PutItem(&dynamodb.PutItemInput{
 		TableName: aws.String(d.tableName),
 		Item:      av,
 	})
@@ -66,7 +102,7 @@ func (d *DynamoDB) Delete(target *db.Target) error {
 		TableName: aws.String(d.tableName),
 	}
 
-	_, err := d.svc.DeleteItem(input)
+	_, err := d.DeleteItem(input)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			if aerr.Code() == dynamodb.ErrCodeResourceNotFoundException {
@@ -88,7 +124,7 @@ func (d *DynamoDB) Get(target *db.Target) error {
 		TableName: aws.String(d.tableName),
 	}
 
-	result, err := d.svc.GetItem(input)
+	result, err := d.GetItem(input)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			if aerr.Code() == dynamodb.ErrCodeResourceNotFoundException {
@@ -110,7 +146,7 @@ func (d *DynamoDB) Update(target *db.Target) error {
 		return err
 	}
 
-	_, err = d.svc.PutItem(&dynamodb.PutItemInput{
+	_, err = d.PutItem(&dynamodb.PutItemInput{
 		TableName: aws.String(d.tableName),
 		Item:      av,
 	})
@@ -129,7 +165,7 @@ func (d *DynamoDB) GetAll(list *[]db.Target) error {
 	input := &dynamodb.ScanInput{
 		TableName: aws.String(d.tableName),
 	}
-	result, err := d.svc.Scan(input)
+	result, err := d.Scan(input)
 	if err != nil {
 		return err
 	}
@@ -162,7 +198,7 @@ func (d *DynamoDB) createTable() error {
 		},
 		TableName: aws.String(d.tableName),
 	}
-	_, err := d.svc.CreateTable(input)
+	_, err := d.CreateTable(input)
 	if err != nil {
 		resourceInUseException := &dynamodb.ResourceInUseException{}
 		if errors.As(err, &resourceInUseException) {
@@ -186,7 +222,14 @@ func (s *StorageService) New(tableName string) (db.Storage, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.svc = dynamodb.New(sess)
+	dynamo := dynamodb.New(sess)
+	db.ICreateTable = dynamo
+	db.IDeleteItem = dynamo
+	db.IDescribeTable = dynamo
+	db.IGetItem = dynamo
+	db.IPutItem = dynamo
+	db.IDeleteItem = dynamo
+	db.IScan = dynamo
 	db.tableName = tableName
 	err = db.createTable()
 	if err != nil {
@@ -198,3 +241,7 @@ func (s *StorageService) New(tableName string) (db.Storage, error) {
 func init() {
 	db.RegisterStorage(&StorageService{})
 }
+
+var (
+	_ db.Storage = (*DynamoDB)(nil)
+)

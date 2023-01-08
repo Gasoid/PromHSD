@@ -54,7 +54,21 @@ func (e *ValidationError) Unwrap() error {
 	return e.Err
 }
 
+type ConflictError struct {
+	Text string
+	Err  error
+}
+
+func (e *ConflictError) Error() string {
+	return e.Text
+}
+
+func (e *ConflictError) Unwrap() error {
+	return e.Err
+}
+
 var (
 	ErrNotFound   *NotFoundError   = &NotFoundError{Text: "Target was not found"}
 	ErrValidation *ValidationError = &ValidationError{Text: "Provided data is not valid"}
+	ErrConflict   *ConflictError   = &ConflictError{Text: "ID exists"}
 )

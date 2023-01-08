@@ -181,6 +181,12 @@ func Test_createTargetHandler(t *testing.T) {
 			code:    http.StatusUnprocessableEntity,
 			payload: `{"name": "test", "entries": [{"targets": "127.0.0.1:5000", "labels": "keys"}]}`,
 		},
+		{
+			name:    "conflictError",
+			err:     &db.ConflictError{},
+			code:    http.StatusConflict,
+			payload: `{"name": "test", "entries": [{"targets": "127.0.0.1:5000", "labels": "key=val,k1=v1"}]}`,
+		},
 	}
 
 	for _, tt := range tests {

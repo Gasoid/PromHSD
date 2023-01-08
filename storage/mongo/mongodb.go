@@ -114,3 +114,7 @@ func (s *StorageService) New(connUri string) (db.Storage, error) {
 func init() {
 	db.RegisterStorage(&StorageService{})
 }
+
+var (
+	_ db.Storage = (*MongoDB)(nil)
+)
